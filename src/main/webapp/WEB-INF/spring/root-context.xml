@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+	
+	<!-- 
+		세팅 정보
+		스프링 버전 : 4.3.9.RELEASE
+		Java 버전 : jdk 1.8.0_101
+		Tomcat 버전 : 8 버전
+	 -->
+		
+	<context:component-scan base-package="kr"> 
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+		
+	<context:annotation-config />
+	
+	<!-- MariaDB 데이터소스 -->
+	<bean id="dataSourceSpied" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://13.125.185.44:3306/yusangsDB?useSSL=false&amp;serverTimezone=UTC"/>
+		<property name="username" value="yusangs" />
+		<property name="password" value="yusangs" />
+		<property name="maxActive" value="10"/>
+		<property name="maxWait" value="6000"/>
+		<property name="poolPreparedStatements" value="true"/>
+		<property name="defaultAutoCommit" value="true"/>
+		<property name="initialSize" value="10"/>
+		<property name="maxIdle" value="10"/>
+		<property name="validationQuery" value="select 1 from dual"/>
+		<property name="testWhileIdle" value="true"/>
+		<property name="timeBetweenEvictionRunsMillis" value="7200000"/>
+	</bean>
+	
+	<!-- DB 로그 -->
+	<bean id="dataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+		<constructor-arg ref="dataSourceSpied" />
+		<property name="logFormatter">
+			<bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">
+				<property name="loggingType" value="MULTI_LINE" />
+				<property name="sqlPrefix" value="SQL         :  " />
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- myBatis -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" >
+			<value>classpath:/mybatis-config.xml</value>
+		</property>
+		<property name="typeAliasesPackage" value="com.iedu.sql" />
+		<property name="mapperLocations" value="classpath:kr/co/spring/sql/*Mapper.xml"/>
+	</bean>
+	
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+	
+	<!-- 파일 첨부 크기 설정 --> 
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="15000000"/>
+		<property name="maxInMemorySize" value="15000000"/>
+	</bean>
+	
+	<!-- Transaction Manager -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> 
+		<property name="dataSource" ref="dataSource" /> 
+	</bean> 
+	
+	<!-- 메일 발송 bean 생성 -->
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.gmail.com"/><!-- google smtp 서버 -->
+		<property name="port" value="587"/>
+		<property name="username" value="parou12@gmail.com"/>
+		<property name="password" value="akf5986248"/>
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.starttls.enable">true</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<tx:advice id="txAdvice" transaction-manager="transactionManager"> 
+		<tx:attributes> 
+			<tx:method name="*" rollback-for="Exception"/>
+		</tx:attributes> 
+	</tx:advice>
+	
+	<aop:config> 
+		<aop:pointcut id="transactionPointcut" expression="execution(* kr.co.spring..*ServiceImpl.*(..))"/> 
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="transactionPointcut" /> 
+	</aop:config>
+	
+	<!-- 기본 기능 클래스 -->
+	<bean id="commonUtil" class="kr.co.spring.common.CommonUtil"/>
+	
+</beans>
