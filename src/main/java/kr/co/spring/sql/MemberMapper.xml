@@ -5,4 +5,13 @@
 	
 	<mapper namespace="member">
 		
+		<select id="selectUserIdx" parameterType="Map" resultType="Object">
+			SELECT
+				IDX 
+			FROM 
+				TBL_MEMBER 
+			WHERE 
+				USER_ID = #{user_id}
+		</select>
+		
 	</mapper>

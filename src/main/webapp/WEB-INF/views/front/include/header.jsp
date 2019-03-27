@@ -53,8 +53,8 @@
 						</a>
 						<div class="dropdown-menu">
 							<a href="#" class="dropdown-item">프로필</a>
-							<a href="#" class="dropdown-item">로그인</a>
-							<a href="#" class="dropdown-item">회원가입</a>
+							<a href="/member/loginForm.do" class="dropdown-item">로그인</a>
+							<a href="/member/registForm.do" class="dropdown-item">회원가입</a>
 							<a href="#" class="dropdown-item">로그아웃</a>
 						</div>
 					</li>
