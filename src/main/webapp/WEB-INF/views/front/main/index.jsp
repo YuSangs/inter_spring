@@ -36,3 +36,12 @@
 		</section>
 	</div>
 </main>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		var msg = "${msg}";
+		if(msg != ""){
+			alert(msg);
+		}
+	});
+</script>

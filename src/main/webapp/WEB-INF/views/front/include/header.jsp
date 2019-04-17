@@ -52,11 +52,20 @@
 							<span class="nav-link-inner--text">프로필</span>
 						</a>
 						<div class="dropdown-menu">
-							<a href="#" class="dropdown-item">프로필</a>
-							<a href="/member/loginForm.do" class="dropdown-item">로그인</a>
-							<a href="/member/registForm.do" class="dropdown-item">회원가입</a>
-							<a href="#" class="dropdown-item">로그아웃</a>
+							<c:choose>
+								<c:when test="${sessionScope.sessionVo ne null }">
+									<a href="#" class="dropdown-item">프로필</a>
+									<a href="/member/logoutProc.do" class="dropdown-item">로그아웃</a>
+								</c:when>
+								<c:otherwise>
+									<a href="/member/loginForm.do" class="dropdown-item">로그인</a>
+									<a href="/member/registForm.do" class="dropdown-item">회원가입</a>
+								</c:otherwise>
+							</c:choose>
 						</div>
+					</li>
+					<li class="nav-item dropdown">
+						<span class="nav-link-inner--text nav-link">안녕하세요</span>
 					</li>
 				</ul>
 			</div>

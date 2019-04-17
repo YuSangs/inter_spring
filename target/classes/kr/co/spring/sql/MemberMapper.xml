@@ -5,13 +5,35 @@
 	
 	<mapper namespace="member">
 		
+		<select id="selectUserInfo" parameterType="Map" resultType="Map">
+			SELECT 
+				* 
+			FROM 
+				TBL_MEMBER 
+			WHERE 
+				DEL_YN = 'N'
+				<if test="user_id != null">
+					AND USER_ID = #{user_id}
+				</if>
+				<if test="user_id != null">
+					AND USER_PW = #{user_pw}
+				</if>
+		</select>
+		
 		<select id="selectUserIdx" parameterType="Map" resultType="Object">
 			SELECT
 				IDX 
 			FROM 
 				TBL_MEMBER 
 			WHERE 
-				USER_ID = #{user_id}
+				DEL_YN = 'N'
+				AND USER_ID = #{user_id}
 		</select>
+		
+		<insert id="insertMemberRegist" parameterType="Map">
+			INSERT INTO
+			TBL_MEMBER (USER_ID, USER_PW, USER_NAME, USER_AUTH, REG_DATE) 
+			VALUES (#{user_id}, #{user_pw}, #{user_name}, 'ROLE_USER', NOW())
+		</insert>
 		
 	</mapper>

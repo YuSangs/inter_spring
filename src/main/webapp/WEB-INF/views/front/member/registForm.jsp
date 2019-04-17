@@ -22,7 +22,7 @@
 							<div class="text-center text-muted mb-4">
 								<small>회원가입 창</small>
 							</div>
-							<form id="registForm" role="form">
+							<form id="registForm" role="form" action="/member/registProc.do" method="post">
 								<div class="form-group">
 									<div class="input-group input-group-alternative mb-3">
 										<div class="input-group-prepend">
@@ -74,7 +74,7 @@
 </main>
 
 <script type="text/javascript">
-	
+	var overlapTF = "false";
 	/*ajax 호출 함수*/	
 	function ajaxCall(reqUrl, reqData){
 		$.ajax({
@@ -104,7 +104,7 @@
 	
 	function overlapChk(){
 		if($("#user_id").val() == ""){
-			alert("아이디 입력해야 중복확인이 가능해요");
+			alert("아이디 입력해야 중복확인이 가능합니다.");
 			$("#user_id").parent("div").addClass("has-danger");
 			$("#user_id").focus();
 			return;
@@ -118,25 +118,36 @@
 
 	function registProc(){
 		if($("#user_id").val() == ""){
-			alert("아이디 입력해야 돼요");
+			alert("아이디 입력해 주세요.");
 			$("#user_id").parent("div").addClass("has-danger");
 			$("#user_id").focus();
 			return;
+		}else{
+			if(overlapTF == "false"){
+				alert("아이디 중복확인을 해주세요.");
+				return;
+			}
 		}
 		if($("#user_pw").val() == ""){
-			alert("비밀번호 입력해야 돼요");
+			alert("비밀번호 입력해 주세요.");
 			$("#user_pw").parent("div").addClass("has-danger");
 			$("#user_pw").focus();
 			return;
 		}
 		if($("#user_pw_chk").val() == ""){
-			alert("비밀번호 체크 입력해야 돼요");
+			alert("비밀번호 체크 입력해 주세요.");
 			$("#user_pw_chk").parent("div").addClass("has-danger");
 			$("#user_pw_chk").focus();
 			return;
+		}else{
+			if($("#user_pw").val() != $("#user_pw_chk").val()){
+				alert("비밀번호와 비밀번호 체크가 일치하지 않습니다. \n다시 입력해 주세요.");
+				$("#user_pw").focus();
+				return;
+			}
 		}
 		if($("#user_name").val() == ""){
-			alert("닉네임 입력해야 돼요");
+			alert("닉네임 입력해 주세요.");
 			$("#user_name").parent("div").addClass("has-danger");
 			$("#user_name").focus();
 			return;
